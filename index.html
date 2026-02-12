@@ -1,4 +1,441 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing Plans</title>
+  <style>
+    :root {
+      --card-bg: #ffffff;
+      --card-radius: 0.75rem;
+      --card-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      --border-subtle: #e5e7eb;
+      --text-main: #0f172a;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --accent-soft: rgba(37, 99, 235, 0.08);
+      --price: #16a34a;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e0f2fe 0, #f9fafb 50%, #e5e7eb 100%);
+      color: var(--text-main);
+    }
+
+    main {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      letter-spacing: -0.03em;
+    }
+
+    .page-subtitle {
+      margin: 0;
+      font-size: 0.975rem;
+      color: var(--text-muted);
+    }
+
+    .pricing-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .pricing-card {
+      position: relative;
+      background-color: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      padding: 1.5rem 1.75rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      row-gap: 1rem;
+      border: 1px solid transparent;
+      transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+    }
+
+    .pricing-card--featured {
+      border-color: var(--accent-soft);
+      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.25);
+    }
+
+    .pricing-card:hover,
+    .pricing-card:focus-within {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.16);
+      border-color: var(--accent-soft);
+    }
+
+    .pricing-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin: 0 0 0.25rem;
+    }
+
+    .card-description {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      padding: 0.25rem 0.6rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+    }
+
+    .price-amount {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--price);
+    }
+
+    .price-period {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .features-heading {
+      margin: 0.25rem 0 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 0.75rem;
+    }
+
+    .features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .features li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-icon {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      flex-shrink: 0;
+    }
+
+    .pricing-card-footer {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: #f9fafb;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+    }
+
+    .btn span.icon {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      background: var(--accent-dark);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.35) inset;
+    }
+
+    .btn:focus-visible {
+      outline: none;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--accent-dark);
+      border-color: var(--accent-soft);
+    }
+
+    .btn-secondary:hover,
+    .btn-secondary:focus-visible {
+      background: #eff6ff;
+    }
+
+    .helper-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1.25rem;
+      }
+
+      .pricing-card {
+        padding: 1.25rem 1.35rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main aria-labelledby="pricing-heading">
+    <header class="page-header">
+      <h1 id="pricing-heading" class="page-title">Simple, transparent pricing</h1>
+      <p class="page-subtitle">Choose the plan that fits your workflow. Upgrade or cancel anytime.</p>
+    </header>
+
+    <section class="pricing-grid" aria-label="Pricing plans">
+      <!-- Cards are rendered here by JavaScript Card() component -->
+    </section>
+  </main>
+
+  <script>
+    /**
+     * Reusable Card component
+     * @param {Object} props
+     * @param {string} props.title
+     * @param {string} props.price
+     * @param {string[]} props.features
+     * @param {string} [props.description]
+     * @param {boolean} [props.featured]
+     * @param {string} [props.ctaLabel]
+     * @param {string} [props.ctaHint]
+     */
+    function Card(props) {
+      const {
+        title,
+        price,
+        features,
+        description = "",
+        featured = false,
+        ctaLabel = "Start trial",
+        ctaHint = ""
+      } = props;
+
+      const article = document.createElement("article");
+      article.className = "pricing-card" + (featured ? " pricing-card--featured" : "");
+      article.setAttribute("tabindex", "-1");
+      article.setAttribute("aria-label", title + " plan");
+
+      const header = document.createElement("header");
+      header.className = "pricing-card-header";
+
+      const titleBlock = document.createElement("div");
+
+      const h2 = document.createElement("h2");
+      h2.className = "card-title";
+      h2.textContent = title;
+
+      const desc = document.createElement("p");
+      desc.className = "card-description";
+      desc.textContent = description;
+
+      titleBlock.appendChild(h2);
+      if (description) {
+        titleBlock.appendChild(desc);
+      }
+
+      header.appendChild(titleBlock);
+
+      if (featured) {
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = "Most popular";
+        header.appendChild(badge);
+      }
+
+      const priceRow = document.createElement("div");
+      priceRow.className = "price-row";
+
+      const priceAmount = document.createElement("span");
+      priceAmount.className = "price-amount";
+      priceAmount.textContent = price;
+
+      const pricePeriod = document.createElement("span");
+      pricePeriod.className = "price-period";
+      pricePeriod.textContent = "/ month";
+
+      priceRow.appendChild(priceAmount);
+      priceRow.appendChild(pricePeriod);
+
+      const featuresHeading = document.createElement("p");
+      featuresHeading.className = "features-heading";
+      featuresHeading.textContent = "What’s included";
+
+      const list = document.createElement("ul");
+      list.className = "features";
+
+      features.forEach(function (item) {
+        const li = document.createElement("li");
+
+        const icon = document.createElement("span");
+        icon.className = "feature-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = "✓";
+
+        const text = document.createElement("span");
+        text.textContent = item;
+
+        li.appendChild(icon);
+        li.appendChild(text);
+        list.appendChild(li);
+      });
+
+      const footer = document.createElement("footer");
+      footer.className = "pricing-card-footer";
+
+      const button = document.createElement("button");
+      button.className = featured ? "btn" : "btn btn-secondary";
+      button.type = "button";
+      button.setAttribute("aria-label", ctaLabel + " for the " + title + " plan");
+
+      button.addEventListener("click", function () {
+        const message = "You chose the " + title + " plan at " + price + " per month.";
+        alert(message);
+      });
+
+      const labelSpan = document.createElement("span");
+      labelSpan.textContent = ctaLabel;
+
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "icon";
+      iconSpan.setAttribute("aria-hidden", "true");
+      iconSpan.textContent = "→";
+
+      button.appendChild(labelSpan);
+      button.appendChild(iconSpan);
+
+      footer.appendChild(button);
+
+      if (ctaHint) {
+        const hint = document.createElement("p");
+        hint.className = "helper-text";
+        hint.textContent = ctaHint;
+        footer.appendChild(hint);
+      }
+
+      article.appendChild(header);
+      article.appendChild(priceRow);
+      article.appendChild(featuresHeading);
+      article.appendChild(list);
+      article.appendChild(footer);
+
+      return article;
+    }
+
+    // Render example cards
+    (function renderPricing() {
+      const grid = document.querySelector(".pricing-grid");
+      if (!grid) return;
+
+      const plans = [
+        {
+          title: "Basic",
+          price: "$9.99",
+          description: "Get started with essential tools for solo projects.",
+          features: ["1 GB secure storage", "Basic email support", "Access to core workflows"],
+          ctaLabel: "Start basic trial",
+          ctaHint: "Perfect for quick experiments and personal use."
+        },
+        {
+          title: "Pro",
+          price: "$19.99",
+          description: "For growing teams that need more power.",
+          features: ["10 GB secure storage", "Priority support", "Advanced automation rules", "Shared team workspaces"],
+          featured: true,
+          ctaLabel: "Choose Pro",
+          ctaHint: "Most teams start here and scale over time."
+        },
+        {
+          title: "Business",
+          price: "$39.99",
+          description: "Full control, reporting, and security for companies.",
+          features: ["Unlimited projects", "Audit logs & analytics", "SSO & advanced permissions", "Dedicated success manager"],
+          ctaLabel: "Talk to sales",
+          ctaHint: "We’ll help you design the right rollout for your org."
+        }
+      ];
+
+      plans.forEach(function (plan) {
+        grid.appendChild(Card(plan));
+      });
+    })();
+  </script>
+</body>
+</html>
+
